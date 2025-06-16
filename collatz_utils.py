@@ -14,10 +14,12 @@ def render_frame(fig):
     :param fig: plt.figure() object to be converted into a frame
     :return: the resulting frame and its dimentions
     '''
-    fig.canvas.draw()
-    buf = fig.canvas.tostring_rgb()
-    ncols, nrows = fig.canvas.get_width_height()
-    frame = np.frombuffer(buf, dtype=np.uint8).reshape(nrows, ncols, 3)
+    buf = BytesIO()
+    fig.savefig(buf, format='png', facecolor=fig.get_facecolor(), bbox_inches='tight')
+    buf.seek(0)
+    img = Image.open(buf).convert("RGB")  
+    frame = np.array(img)
+    nrows, ncols = frame.shape[:2]
     return frame, ncols, nrows
 
 def plot_limits(starts, theta, start_angle):
