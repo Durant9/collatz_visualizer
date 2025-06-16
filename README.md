@@ -27,4 +27,5 @@ It's possible to pass the parameters via CLI or the yaml config file (template [
 - --**plot_path** (*str*): Path where to save the output video
 
 ## Particular examples
+- n=500, theta=pi/3, start_angle=pi/2, color="#00FF00", line_width=0.5, alpha=0.7
 <p align="center"><img width="500" alt="image" src="plots/collatz_pi3.png"></p>
