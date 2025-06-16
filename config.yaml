@@ -1,0 +1,12 @@
+n: 500
+theta: pi/15
+start_angle: pi/2
+color: "#00FF00"
+line_width: 0.5
+alpha: 0.7
+save_video: True
+video_path: 'videos/collatz.avi'
+fps: 20
+save_plot: True
+show_plot: True
+plot_path: 'plots/collatz.png'
