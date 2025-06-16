@@ -15,9 +15,10 @@ def render_frame(fig):
     :return: the resulting frame and its dimentions
     '''
     fig.canvas.draw()
-    buf = fig.canvas.tostring_rgb()
+    # buf = fig.canvas.tostring_rgb()
+    buf = fig.canvas.buffer_rgba()
     ncols, nrows = fig.canvas.get_width_height()
-    frame = np.frombuffer(buf, dtype=np.uint8).reshape(nrows, ncols, 3)
+    frame = np.frombuffer(buf, dtype=np.uint8).reshape(nrows, ncols, 4)[:,:,:3]
     return frame, ncols, nrows
 
 def plot_limits(starts, theta, start_angle):
