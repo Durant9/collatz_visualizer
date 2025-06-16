@@ -111,8 +111,8 @@ if animate:
 
         steps += 1
 
-    for fig in frames:
-        placeholder.image(fig)
+    for frame in frames:
+        placeholder.image(frame)
         time.sleep(0.15)
 
     st.success("Animation completed")
