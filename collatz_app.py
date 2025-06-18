@@ -1,11 +1,8 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-from collatz_utils import plot_limits, next_sequence_points# , render_frame
+from collatz_utils import plot_limits, next_sequence_points
 from math import pi
-import cv2
-import subprocess
-
 import imageio
 import tempfile
 import os
@@ -94,8 +91,6 @@ if animate:
     angles += np.where(np.array(starts) % 2 == 0, -theta, theta)
     new_numbers = next_sequence_points(starts)
 
-    placeholder = st.empty()  # spazio dove aggiornare i plot
-
     fig, ax = plt.subplots(figsize=(10, 10), facecolor='black')
     ax.set_facecolor('black')
     ax.set_xlim(xlim)
@@ -103,11 +98,6 @@ if animate:
     ax.set_aspect('equal')
     plt.axis('off')
     plt.plot(0, 0, '.', color=color, markersize=8, alpha=alpha)
-
-    # video_name = './output.mp4'
-    # firstFrame, ncols, nrows = render_frame(fig)
-    # video = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, (ncols, nrows))
-    # video.write(firstFrame)
 
     with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmpfile:
         tmpfile_path = tmpfile.name
@@ -122,8 +112,6 @@ if animate:
             plt.plot([x0, x1], [y0, y1], '-', color=color, alpha=alpha, linewidth=line_width)
 
         if steps % 2 == 0:
-            # frame, _, _ = render_frame(fig)
-            # video.write(frame)
             frame = render_frame(fig)
             writer.append_data(frame)
 
@@ -133,13 +121,6 @@ if animate:
         angles += np.where(np.array(new_numbers) % 2 == 0, -theta, theta)
 
         steps += 1
-
-    # video.release()
-    # convertedVideo = "./outputh264.mp4"
-    # subprocess.call(args=f"ffmpeg -y -i {video_name} -c:v libx264 {convertedVideo}".split(" "))
-
-    # with open(convertedVideo, "rb") as f:
-    #     st.video(f)
 
     writer.close()
     with open(tmpfile_path, 'rb') as f:
