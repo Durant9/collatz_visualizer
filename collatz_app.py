@@ -25,6 +25,7 @@ with st.sidebar:
     start_angle_str = st.text_input("Starting angle", value="pi/2")
     line_width = st.number_input("Line width", min_value=0.1, max_value=2.01, value=0.5, step=0.1)
     alpha = st.number_input("Transparency (0-1)", min_value=0.0, max_value=1.01, value=0.7, step=0.05)
+    fps = st.number_input("Video FPS", min_value=1, max_value=61, value=10, step=1)
     color = st.color_picker("Color", "#FFFF00")
 
 if st.button("Generate"):
