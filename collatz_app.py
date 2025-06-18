@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collatz_utils import plot_limits, next_sequence_points, render_frame
 from math import pi
-import time
+import cv2
+import subprocess
 
 # Parsing angles in the form 'pi/2'
 def parse_angle(expr):
