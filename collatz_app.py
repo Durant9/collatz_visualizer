@@ -91,8 +91,12 @@ if animate:
     plt.axis('off')
     plt.plot(0, 0, '.', color=color, markersize=8, alpha=alpha)
 
+    video_name = './output.mp4'
+    firstFrame, ncols, nrows = render_frame(fig)
+    video = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, (ncols, nrows))
+    video.write(firstFrame)
+
     steps = 0
-    frames = []
     while any(n != 1 for n in new_numbers):
         new_points = [(x + l * np.cos(a), y + l * np.sin(a))
                       for (x, y), l, a in zip(start_points, segments, angles)]
@@ -102,7 +106,7 @@ if animate:
 
         if steps % 2 == 0:
             frame, _, _ = render_frame(fig)
-            frames.append(frame)
+            video.write(frame)
 
         new_numbers = next_sequence_points(new_numbers)
         start_points = new_points
@@ -111,8 +115,11 @@ if animate:
 
         steps += 1
 
-    for frame in frames:
-        placeholder.image(frame)
-        time.sleep(0.15)
+    video.release()
+    convertedVideo = "./outputh264.mp4"
+    subprocess.call(args=f"ffmpeg -y -i {video_name} -c:v libx264 {convertedVideo}".split(" "))
+
+    with open(convertedVideo, "rb") as f:
+        st.video(f)
 
     st.success("Animation completed")
