@@ -1,10 +1,14 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-from collatz_utils import plot_limits, next_sequence_points, render_frame
+from collatz_utils import plot_limits, next_sequence_points# , render_frame
 from math import pi
 import cv2
 import subprocess
+
+import imageio
+import tempfile
+import os
 
 # Parsing angles in the form 'pi/2'
 def parse_angle(expr):
@@ -13,6 +17,13 @@ def parse_angle(expr):
     except:
         st.error(f"Angolo non valido: '{expr}'")
         return None
+
+def render_frame(fig):
+    fig.canvas.draw()
+    buf = fig.canvas.buffer_rgba()
+    ncols, nrows = fig.canvas.get_width_height()
+    frame = np.frombuffer(buf, dtype=np.uint8).reshape(nrows, ncols, 4)
+    return frame[:, :, :3]
 
 st.set_page_config(layout="wide")
 st.title("Collatz Conjecture Visualizer")
@@ -93,10 +104,14 @@ if animate:
     plt.axis('off')
     plt.plot(0, 0, '.', color=color, markersize=8, alpha=alpha)
 
-    video_name = './output.mp4'
-    firstFrame, ncols, nrows = render_frame(fig)
-    video = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, (ncols, nrows))
-    video.write(firstFrame)
+    # video_name = './output.mp4'
+    # firstFrame, ncols, nrows = render_frame(fig)
+    # video = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), fps, (ncols, nrows))
+    # video.write(firstFrame)
+
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmpfile:
+        tmpfile_path = tmpfile.name
+    writer = imageio.get_writer(tmpfile_path, mode='I', fps=10, format="ffmpeg", codec="libx264")
 
     steps = 0
     while any(n != 1 for n in new_numbers):
@@ -107,8 +122,10 @@ if animate:
             plt.plot([x0, x1], [y0, y1], '-', color=color, alpha=alpha, linewidth=line_width)
 
         if steps % 2 == 0:
-            frame, _, _ = render_frame(fig)
-            video.write(frame)
+            # frame, _, _ = render_frame(fig)
+            # video.write(frame)
+            frame = render_frame(fig)
+            writer.append_data(frame)
 
         new_numbers = next_sequence_points(new_numbers)
         start_points = new_points
@@ -117,11 +134,17 @@ if animate:
 
         steps += 1
 
-    video.release()
-    convertedVideo = "./outputh264.mp4"
-    subprocess.call(args=f"ffmpeg -y -i {video_name} -c:v libx264 {convertedVideo}".split(" "))
+    # video.release()
+    # convertedVideo = "./outputh264.mp4"
+    # subprocess.call(args=f"ffmpeg -y -i {video_name} -c:v libx264 {convertedVideo}".split(" "))
 
-    with open(convertedVideo, "rb") as f:
-        st.video(f)
+    # with open(convertedVideo, "rb") as f:
+    #     st.video(f)
+
+    writer.close()
+    with open(tmpfile_path, 'rb') as f:
+        video_bytes = f.read()
+    os.remove(tmpfile_path)
+    st.video(video_bytes)
 
     st.success("Animation completed")
