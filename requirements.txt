@@ -6,3 +6,5 @@ opencv_python_headless==4.10.0.84
 PyYAML==6.0.2
 streamlit==1.39.0
 sympy==1.13.1
+imageio
+imageio-ffmpeg
